@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Memorama Básico</title>
+
+<style>
+  body {
+    background: #222;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+  }
+
+  #tablero {
+    width: 420px;
+    margin: auto;
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    gap: 10px;
+  }
+
+  .tarjeta {
+    width: 100px;
+    height: 100px;
+    background: #444;
+    color: #444;      /* Oculta el emoji (mismo color del fondo) */
+    font-size: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .volteada {
+    background: #00bcd4;
+    color: white;     /* Muestra el emoji */
+  }
+
+  .acertada {
+    background: green;
+    color: white;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<h1>Memorama</h1>
+<p>haz clic en dos tarjetas para encontrar las parejas</p>
+
+<div id="tablero"></div>
+
+<script>
+
+  const tablero = document.getElementById("tablero");
+
+  // valores básicos
+  let valores = ["🍎","🍎","⭐","⭐","🐶","🐶","🚗","🚗"];
+
+  // mezclar
+  valores.sort(() => Math.random() - 0.5);
+
+  // crear tarjetas simples
+  for (let i = 0; i < valores.length; i++) {
+    let t = document.createElement("div");
+    t.className = "tarjeta";
+    t.textContent = valores[i];  // guardamos el emoji directamente
+    t.valor = valores[i];        // alternativa a dataset
+    tablero.appendChild(t);
+  }
+
+  let primera = null;
+  let segunda = null;
+  let bloqueo = false;
+
+  // evento click
+  tablero.onclick = function(e) {
+    let t = e.target;
+
+    if (!t.classList.contains("tarjeta") || bloqueo) return;
+    if (t.classList.contains("volteada")) return;
+
+    // mostrar tarjeta
+    t.classList.add("volteada");
+
+    if(primera === null) { primera = t;} 
+    
+    else{
+      segunda = t;
+      bloqueo = true;
+
+      if (primera.valor === segunda.valor) {
+        // acierto
+        primera.classList.add("acertada");
+        segunda.classList.add("acertada");
+        limpiar();
+      } else {
+        // error → se voltean
+        setTimeout(() => {
+          primera.classList.remove("volteada");
+          segunda.classList.remove("volteada");
+          limpiar();
+        }, 800);
+      }
+    }
+  };
+
+  function limpiar() {
+    primera = null;
+    segunda = null;
+    bloqueo = false;
+  }
+
+</script>
+
+</body>
+</html>
